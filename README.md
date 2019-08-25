@@ -1,0 +1,1 @@
+This is a project to play around with refactoring practices such as renaming variables in scripts and file names as a fake project evolves. 
