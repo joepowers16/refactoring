@@ -38,8 +38,8 @@ KNIT = Rscript -e "knitr::knit('$<')"
 .Phony: all clean clobber
 
 # Processed data files
-data = drinks_per_person_year.rds country_long_lat.rds gdp_ppp.rds \
-drinks_latlong_gdp.rds
+data = alcohol_per_person_year.rds country_long_lat.rds gdp_ppp.rds \
+alcohol_latlong_gdp.rds
 
 # Reports
 #reports = my_report.html
@@ -57,7 +57,7 @@ clobber:
 ############################### MUNGE DATA ###################################
 ##############################################################################
 
-drinks_per_person_year.rds: drinks_per_person_year.R drinks.csv
+alcohol_per_person_year.rds: alcohol_per_person_year.R alcohol.csv
 	Rscript $<
 
 country_long_lat.rds: country_long_lat.R long_lat.csv
@@ -66,8 +66,8 @@ country_long_lat.rds: country_long_lat.R long_lat.csv
 gdp_ppp.rds: gdp_ppp.R API_NY.GDP.PCAP.PP.CD_DS2_en_csv_v2.csv
 	Rscript $<
 	
-drinks_latlong_gdp.rds: drinks_latlong_gdp.R country_long_lat.rds gdp_ppp.rds \
-drinks_per_person_year.rds
+alcohol_latlong_gdp.rds: alcohol_latlong_gdp.R country_long_lat.rds gdp_ppp.rds \
+alcohol_per_person_year.rds
 	Rscript $<
 
 ##############################################################################

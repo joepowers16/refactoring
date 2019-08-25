@@ -24,21 +24,21 @@ opts_chunk$set(
 ```
 
 ```{r load data, include=FALSE}
-ds_drinks <- read_rds("../data/ds_drinks_merged.rds")
+ds_alcohol <- read_rds("../data/ds_alcohol_merged.rds")
 ```
 
 Poking around: 
 ```{r}
-ds_drinks %>% arrange(desc(total))
+ds_alcohol %>% arrange(desc(total))
 
-ds_drinks %>% filter(str_detect(country, "R")) %>% arrange(desc(country))
+ds_alcohol %>% filter(str_detect(country, "R")) %>% arrange(desc(country))
 
-ds_drinks %>% filter(country == "Russian Federation")
+ds_alcohol %>% filter(country == "Russian Federation")
 ```
 
 
 ```{r}
-ds_drinks %>% 
+ds_alcohol %>% 
   mutate(
     lat_abs = abs(latitude),
     ns = ifelse(latitude > 0, "North",
@@ -58,7 +58,7 @@ ds_drinks %>%
 ```
 
 ```{r}
-ds_drinks %>% 
+ds_alcohol %>% 
   ggplot(aes(x = latitude, y = total)) + 
   geom_point(alpha = .75) + 
   geom_smooth() + 
@@ -73,7 +73,7 @@ ds_drinks %>%
 ```
 
 ```{r}
-ds_drinks %>% 
+ds_alcohol %>% 
   ggplot(aes(x = latitude, y = total)) + 
   geom_boxplot(aes(group = cut_width(latitude, 5))) + 
   scale_x_continuous(breaks = seq(-65, 65, by = 5), limits = c(-65, 65)) + 
@@ -86,12 +86,12 @@ ds_drinks %>%
 ```
 
 ```{r}
-ds_drinks %>% 
+ds_alcohol %>% 
   ggplot(aes(x = ppp, y = total)) + 
   geom_point(alpha = .75) + 
   geom_smooth() 
 
-ds_drinks %>% 
+ds_alcohol %>% 
   filter(ppp < 5e4) %>% 
   ggplot(aes(x = ppp, y = total)) + 
   geom_point(alpha = .75) + 
@@ -104,7 +104,7 @@ ds_drinks %>%
 ```
 
 ```{r}
-ds_drinks %>% 
+ds_alcohol %>% 
   mutate(
     ppp_f = ifelse(ppp <= 15000, "low",
       ifelse(ppp > 15000 & ppp < 30000, "medium",
@@ -130,7 +130,7 @@ TBD: Add in religion as a variable.
 
 High PPP countries in northern latitudes driving the plunge in alcohol consumption:
 ```{r}
-ds_drinks %>% 
+ds_alcohol %>% 
   mutate(
     ppp_f = ifelse(ppp <= 15000, "low",
       ifelse(ppp > 15000 & ppp < 30000, "medium",
