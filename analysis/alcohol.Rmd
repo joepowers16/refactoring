@@ -2,7 +2,7 @@
 title: "Alcohol consumption as function of latitude and wealth"
 author: "JP"
 date: "July 7, 2017"
-output: html_document
+output: github_document
 ---
 
 # Overview
@@ -13,6 +13,8 @@ library(tidyverse)
 library(readr)
 library(stringr)
 library(forcats)
+
+source(here::here("file_paths.R"))
 ```
 
 ```{r global options, include=FALSE}
@@ -24,12 +26,12 @@ opts_chunk$set(
 ```
 
 ```{r load data, include=FALSE}
-ds_alcohol <- read_rds("../data/ds_alcohol_merged.rds")
+ds_alcohol <- read_rds(file_alcohol_latlong_gdp)
 ```
 
 Poking around: 
 ```{r}
-ds_alcohol %>% arrange(desc(total))
+ds_alcohol %>% arrange(desc(ttl_L_pure_alcohol))
 
 ds_alcohol %>% filter(str_detect(country, "R")) %>% arrange(desc(country))
 
@@ -45,7 +47,7 @@ ds_alcohol %>%
       ifelse(latitude <= 0, "South", NA))
   ) %>% 
   filter(complete.cases(ns)) %>% 
-  ggplot(aes(x = lat_abs, y = total, color = ns)) + 
+  ggplot(aes(x = lat_abs, y = ttl_L_pure_alcohol, color = ns)) + 
   geom_point() + 
   geom_smooth() + 
   scale_color_discrete("Hemisphere") + 
@@ -59,7 +61,7 @@ ds_alcohol %>%
 
 ```{r}
 ds_alcohol %>% 
-  ggplot(aes(x = latitude, y = total)) + 
+  ggplot(aes(x = latitude, y = ttl_L_pure_alcohol)) + 
   geom_point(alpha = .75) + 
   geom_smooth() + 
   geom_vline(xintercept = 0, color = "green") + 
@@ -74,7 +76,7 @@ ds_alcohol %>%
 
 ```{r}
 ds_alcohol %>% 
-  ggplot(aes(x = latitude, y = total)) + 
+  ggplot(aes(x = latitude, y = ttl_L_pure_alcohol)) + 
   geom_boxplot(aes(group = cut_width(latitude, 5))) + 
   scale_x_continuous(breaks = seq(-65, 65, by = 5), limits = c(-65, 65)) + 
   geom_vline(xintercept = 0, color = "blue") + 
@@ -87,13 +89,13 @@ ds_alcohol %>%
 
 ```{r}
 ds_alcohol %>% 
-  ggplot(aes(x = ppp, y = total)) + 
+  ggplot(aes(x = ppp, y = ttl_L_pure_alcohol)) + 
   geom_point(alpha = .75) + 
   geom_smooth() 
 
 ds_alcohol %>% 
   filter(ppp < 5e4) %>% 
-  ggplot(aes(x = ppp, y = total)) + 
+  ggplot(aes(x = ppp, y = ttl_L_pure_alcohol)) + 
   geom_point(alpha = .75) + 
   geom_smooth() + 
   labs(
@@ -113,7 +115,7 @@ ds_alcohol %>%
     ppp_f = factor(ppp_f, levels = c("low", "medium", "high"))
   ) %>% 
   filter(complete.cases(ppp_f)) %>% 
-  ggplot(aes(x = latitude, y = total, color = fct_rev(ppp_f))) + 
+  ggplot(aes(x = latitude, y = ttl_L_pure_alcohol, color = fct_rev(ppp_f))) + 
   geom_point(alpha = .75) + 
   geom_smooth() + 
   geom_vline(xintercept = 0, color = "black") + 
@@ -142,8 +144,8 @@ ds_alcohol %>%
     complete.cases(ppp_f),
     ppp_f == "high",
     latitude > 50) %>% 
-  select(country, total, latitude, ppp) %>% 
-  arrange(-total) %>% 
+  select(country, ttl_L_pure_alcohol, latitude, ppp) %>% 
+  arrange(-ttl_L_pure_alcohol) %>% 
   kable() %>% 
   kableExtra::kable_styling()
 ```
