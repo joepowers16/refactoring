@@ -10,6 +10,7 @@ output:
 This script explores global norms of alcohol consumption. I performed this analysis because I had no idea what alcohol consumption looked like globally, and I wanted to know. 
 ```{r}
 library(breadcrumbs)
+library(ggrepel)
 library(knitr)
 library(powerpack)
 library(scales)
@@ -22,7 +23,7 @@ theme_set(theme_minimal())
 
 ```{r global options, include=FALSE}
 opts_chunk$set(
-  fig.path = 'figs/', fig.show = 'asis', dpi = 300, 
+  fig.path = 'figs/', fig.show = 'asis', dpi = 150, 
   include = TRUE, echo = TRUE, 
   warning = FALSE, message = FALSE, cache = TRUE
 ) 
@@ -146,9 +147,9 @@ ds_alcohol %>%
   ggplot(aes(x = latitude, y = ttl_L_pure_alcohol, label = country)) + 
   geom_point(alpha = .75) + 
   geom_smooth() + 
-  geom_text(nudge_x = .25, nudge_y = .25, size = 4) + 
+  geom_text_repel() + 
   labs(
-    title = wrap("Wealthy countries reverse the trend of higher drinking in the far north", 60),
+    title = wrap("Wealthy countries reverse the trend of higher drinking in the far north", 40),
     x = "Latitude",
     y = "Liters of alcohol\nconsumed per person per year"
   )
