@@ -1,12 +1,11 @@
 library(fs)
 
 dir_proj <- here::here()
-dir_cloud <- here::here("cloud_refactoring")
-dir_data <- fs::path(dir_cloud, "data")
+dir_data <- here::here("data")
 dir_raw <- fs::path(dir_data, "raw")
 dir_munge <- here::here("munge")
 dir_analysis <- here::here("analysis")
-dir_reports <- fs::path(dir_cloud, "reports")
+dir_reports <- fs::path("reports")
 
 # Raw data ####
 # https://github.com/fivethirtyeight/data/tree/master/alcohol-consumption
