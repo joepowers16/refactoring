@@ -10,7 +10,20 @@ this analysis because I had no idea what alcohol consumption looked like
 globally, and I wanted to know.
 
 ``` r
+library(breadcrumbs)
 library(knitr)
+library(powerpack)
+```
+
+    ## 
+    ## Attaching package: 'powerpack'
+
+    ## The following object is masked from 'package:breadcrumbs':
+    ## 
+    ##     function_template
+
+``` r
+library(scales)
 library(tidyverse)
 ```
 
@@ -22,15 +35,15 @@ library(tidyverse)
     ## ✔ readr   1.3.1     ✔ forcats 0.4.0
 
     ## ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ✖ readr::col_factor() masks scales::col_factor()
+    ## ✖ purrr::discard()    masks scales::discard()
+    ## ✖ dplyr::filter()     masks stats::filter()
+    ## ✖ dplyr::lag()        masks stats::lag()
 
 ``` r
-library(readr)
-library(stringr)
-library(forcats)
-
 source(here::here("file_paths.R"))
+
+theme_set(theme_minimal())
 ```
 
 Poking around:
@@ -101,9 +114,9 @@ ds_alcohol %>%
   scale_color_discrete("Hemisphere") + 
   scale_x_continuous(breaks = seq(0, 80, by = 10)) + 
   labs(
-    title = "Drinking spikes when you are farther than 30-degrees north from the equator,\nespecially so in the northern hemisphere.",
+    title = "People consume more alcohol in countries further from the equator",
     x = "Absolute Value for Latitude",
-    y = "Liters of alcohol consumed per person per year"
+    y = "Liters of alcohol consumed\nper person per year"
   )
 ```
 
@@ -118,7 +131,7 @@ ds_alcohol %>%
   scale_color_discrete("Hemisphere") + 
   scale_x_continuous(breaks = seq(-45, 65, by = 5)) + 
   labs(
-    title = "Drinking spikes when you are farther than 30-degrees north from the equator,\nespecially so in the northern hemisphere.",
+    title = "Drinking spike is steeper in the northern hemisphere.",
     x = "Latitude",
     y = "Liters of alcohol consumed per person per year"
   )
@@ -133,7 +146,7 @@ ds_alcohol %>%
   scale_x_continuous(breaks = seq(-65, 65, by = 5), limits = c(-65, 65)) + 
   geom_vline(xintercept = 0, color = "blue") + 
   labs(
-    title = "Drinking spikes when you are farther than 30-degrees north of the equator,\nor 15 degrees south",
+    title = "Drinking spikes after 30-degrees north of the equator,\n& 15 degrees south",
     x = "Latitude",
     y = "Liters of alcohol consumed per person per year"
   )
@@ -143,9 +156,12 @@ ds_alcohol %>%
 
 ``` r
 ds_alcohol %>% 
-  ggplot(aes(x = ppp, y = ttl_L_pure_alcohol)) + 
-  geom_point(alpha = .75) + 
-  geom_smooth() 
+  mutate(country_ppp_60k = ifelse(ppp > 60e3 | ttl_L_pure_alcohol > 12, country, NA)) %>% 
+  ggplot(aes(x = ppp, y = ttl_L_pure_alcohol, label = country_ppp_60k)) + 
+  geom_point(alpha = .75) +
+  geom_smooth() + 
+  scale_x_continuous(breaks = seq(0, 150e3, by = 25e3), labels = dollar) + 
+  geom_text(nudge_y = .75)
 ```
 
 ![](figs/unnamed-chunk-6-1.png)<!-- -->
@@ -156,14 +172,15 @@ ds_alcohol %>%
   ggplot(aes(x = ppp, y = ttl_L_pure_alcohol)) + 
   geom_point(alpha = .75) + 
   geom_smooth() + 
+  scale_x_continuous(breaks = seq(0, 150e3, by = 10e3), labels = dollar) + 
   labs(
-    title = "The poor drink less.",
+    title = wrap("Eliminating wealthy outlier countries we see a strong trend of drinking increasing with wealth", 60),
     x = "GDP per Person (PPP) in USD",
     y = "Liters of alcohol consumed per person per year"
   ) 
 ```
 
-![](figs/unnamed-chunk-6-2.png)<!-- -->
+![](figs/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 ds_alcohol %>% 
@@ -182,18 +199,34 @@ ds_alcohol %>%
   scale_color_discrete("PPP") + 
   scale_x_continuous(breaks = seq(-45, 65, by = 5)) + 
   labs(
-    title = "Wealthy countries buck the trend of higher drinking in the far north.",
+    title = wrap("Wealthy countries buck the trend of higher drinking in the far north", 60),
     x = "Latitude",
     y = "Liters of alcohol consumed per person per year"
   )
 ```
 
-![](figs/unnamed-chunk-7-1.png)<!-- -->
+![](figs/unnamed-chunk-8-1.png)<!-- -->
 
 TBD: Add in religion as a variable.
 
 High PPP countries in northern latitudes driving the plunge in alcohol
 consumption:
+
+``` r
+ds_alcohol %>% 
+  filter(latitude > 50, ppp >= 3e4) %>% 
+  ggplot(aes(x = latitude, y = ttl_L_pure_alcohol, label = country)) + 
+  geom_point(alpha = .75) + 
+  geom_smooth() + 
+  geom_text(nudge_x = .25, nudge_y = .25, size = 4) + 
+  labs(
+    title = wrap("Wealthy countries reverse the trend of higher drinking in the far north", 60),
+    x = "Latitude",
+    y = "Liters of alcohol\nconsumed per person per year"
+  )
+```
+
+![](figs/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 ds_alcohol %>% 
