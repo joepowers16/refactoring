@@ -14,13 +14,11 @@
 ##############################################################################
 
 # define project subdirectories
-CLD = ./cloud_refactoring
-DAT = $(CLD)/data
+DAT = ./data
 RAW = $(DAT)/raw
 RAW_PPP = $(RAW)/ppp
 MUN = ./munge
 ANL = ./analysis
-REP = $(CLD)/reports
 
 # Search path
 VPATH = $(RAW) $(RAW_PPP) $(DAT) $(MUN) $(ANL)
@@ -42,13 +40,13 @@ data = alcohol_per_person_year.rds country_long_lat.rds gdp_ppp.rds \
 alcohol_latlong_gdp.rds
 
 # Reports
-#reports = my_report.html
+reports = alcohol.md
 
 # All targets
-all: $(data) 
+all: $(data) $(reports)
 
 clean:
-	rm -f $(ANL)/*.html
+	rm -f $(ANL)/*.md
 
 clobber:
 	rm -f $(ANL)/*.html $(DAT)/*.rds
@@ -74,7 +72,8 @@ alcohol_per_person_year.rds
 ################################# REPORTS ####################################
 ##############################################################################
 
-
+alcohol.md: alcohol.Rmd alcohol_latlong_gdp.rds
+	$(REND)
 
 ##############################################################################
 ########################## AN OVERVIEW OF MAKEFILES ##########################
